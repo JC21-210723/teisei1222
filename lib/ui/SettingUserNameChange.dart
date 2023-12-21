@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../DB/Database.dart';
+import '../Data/AllObligationData.dart';
 
 class StateSettingUserNameChange extends StatefulWidget{
   final String UserName;
@@ -139,6 +140,5 @@ class SettingUserNameChange extends State<StateSettingUserNameChange>{
     final result = await dbProvider.selectlistUser();
     debugPrint('userNameの中身$result');
   }
-
 
 }

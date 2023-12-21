@@ -6,7 +6,8 @@ import 'package:sotsuken2/Data/AllRecommendationData.dart';
 import '../DB/Database.dart';
 
 class StateSettingAllergy extends StatefulWidget{
-  const StateSettingAllergy({super.key});
+  final String UserName;
+  const StateSettingAllergy(this.UserName);
 
   @override
   State<StateSettingAllergy> createState(){
@@ -186,6 +187,7 @@ class SettingAllergy extends State<StateSettingAllergy>{
                           ),
                           child:const Text('更新',style:TextStyle(fontSize:30,fontWeight: FontWeight.bold,color: Colors.deepOrange)),
                           onPressed:(){
+                            _updatefood();//追加した処理12/21
                             setState(() {
 
                             });
@@ -198,6 +200,21 @@ class SettingAllergy extends State<StateSettingAllergy>{
 
       ),
     );
+  }
+
+
+  //追加した処理12/21
+  final dbProvider = DBProvider.instance;
+
+  //食品の更新
+  void _updatefood() async {
+    debugPrint('_updatefoodにきました');
+    final int userid = await dbProvider.selectUserId(widget.UserName);// ユーザーIDを非同期で取得
+    final rowsDeleted = await dbProvider.deletefood(userid);
+    print('削除しました $rowsDeleted');
+    aod.insertHanteiObligation();//追加　表示義務のinsert
+    ard.insertHanteiObligation2();//追加 表示推奨のinsert
+    print('更新しました');
   }
 
 }

@@ -2,6 +2,8 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:sotsuken2/Data/AllObligationData.dart';
+import 'package:sotsuken2/Data/AllRecommendationData.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:sotsuken2/Data/AllUserData.dart';
 
@@ -25,7 +27,7 @@ class DBProvider {
     debugPrint("_initDatabaseにきました");
 
     Directory documentDirectory = await getApplicationDocumentsDirectory();
-    String path = join(documentDirectory.path, 'test5.db');
+    String path = join(documentDirectory.path, 'ugoku1.db');
     return await openDatabase(
       path,
       version: 1,
@@ -67,13 +69,11 @@ class DBProvider {
     await db.execute('''
         CREATE TABLE k_add(
           addid INTEGER PRIMARY KEY AUTOINCREMENT,
-          userid INTEGER,
           hiragana TEXT,
           kanji TEXT,
           eigo TEXT,
           otherName TEXT,
           categoryid TEXT,
-          FOREIGN KEY(userid) REFERENCES user(userid),
           FOREIGN KEY(categoryid) REFERENCES category(categoryid)
         )
     ''');debugPrint("個人追加表を作成しました");
@@ -304,6 +304,115 @@ class DBProvider {
       whereArgs: [userid],
     );
   }
+
+
+  //追加した処理12/21
+  //-アレルゲン変更処理表示用-
+  //あるユーザの表示義務登録情報を参照し、GimuListに格納する処理
+  static List<String> Gimuvalue = [];//とあるユーザが登録したfoodidのリスト
+  static List<String> Gimulist = [];//とあるユーザが登録したfoodNameのリスト
+
+  //表示義務
+  Future<List<String>> selectGimu(int userid) async {
+    debugPrint("selectGimuにきました");
+    final db = await instance.database;
+
+    //カテゴリーがHG　表示義務
+    final list = await db.rawQuery('select foodid from list where userid = ?',[userid]);
+
+
+    Gimuvalue.clear();
+    for (Map<String, dynamic?> gimu in list) {//foodidはある
+      gimu.forEach((key, value) {
+        Gimuvalue.add(value as String); // foodidを1件ずつ格納
+        debugPrint('Gimuvalueの内容：$Gimuvalue');
+      });
+    }
+
+    for(int x = 0;x < Gimuvalue.length; x++) {
+      AllObligationData.Gimu.forEach((key, value) {
+        if (key == Gimuvalue[x]) {
+          Gimulist.clear();//表示義務foodidNameの// クリア
+          Gimulist.add(value as String);
+          debugPrint('Gimuvalueの内容：$Gimulist');
+        }
+      });
+    }
+    debugPrint('最終的にGimulistに入れた内容：$Gimulist');
+
+    return Gimulist;
+  }
+
+
+  //表示推奨
+  //あるユーザの表示推奨登録情報を参照し、SuiListに格納する処理
+  static List<String> Suivalue = [];//とあるユーザが登録したfoodidのリスト
+  static List<String> Suilist = [];//とあるユーザが登録したfoodNameのリスト
+
+  //表示推奨
+  Future<List<String>> selectSui(int userid) async {
+    debugPrint("selectSuiにきました");
+    final db = await instance.database;
+
+    //カテゴリーがHS　表示推奨
+    final list = await db.rawQuery('select foodid from list where userid = ?',[userid]);
+
+    Suilist.clear();
+    for (Map<String, dynamic?> sui in list) {//foodidはある
+      sui.forEach((key, value) {
+        Suivalue.add(value as String); // foodidを1件ずつ格納
+      });
+    }
+
+    for(int x = 0;x < Suivalue.length; x++) {
+      AllRecommendationData.Sui.forEach((key, value) {
+        if (key == Suivalue[x]) {
+          Suilist.clear();//表示義務foodidリストのクリア
+          Suilist.add(value as String);
+        }
+      });
+    }
+    debugPrint('最終的にSuilistに入れた内容：$Suilist');
+
+    return Suilist;
+  }
+
+  //-追加成分の処理-
+  //追加成分の新規登録処理(登録ボタンを押したときに実行)
+  //個人追加表の追加処理
+  Future<int> insertAdd(String hiragana, String kanji, String eigo,String otherName) async {
+    debugPrint("insertAddにきました");
+    Database db = await instance.database;
+    return await db.insert('k_add', {'hiragana': hiragana, 'kanji': kanji, 'eigo': eigo, 'otherName': otherName, 'categoryid': 'TS'});
+  }
+
+  //リスト表の追加処理
+  Future<int> insertlistAdd(int userid ,String foodid) async {
+    debugPrint("insertlistAddにきました");
+    Database db = await instance.database;
+    return await db.insert('list', {'userid': userid, 'foodid': foodid});
+  }
+
+  /*
+  //AddIDセレクト用
+  int addid = 1; // 単一のint型変数として宣言
+  Future<int> selectAddId(int userid) async {
+    debugPrint("selectAddIdにきました");
+    Database db = await instance.database;
+    final List<Map<String, dynamic>> addid =
+    await db.query('k_add', where: 'userid = ?', whereArgs: [userid]);//k_add表のuseridと一致するデータの抽出
+    for (Map<String, dynamic?> userMap in addid) {
+      if (userMap.containsKey('addid')) {
+        addid = userMap['addid'] as int;
+        print('addidを出力：$addid');
+        break; // ループを抜ける
+      }
+    }
+    return addid;
+  }
+
+   */
+
 
 
 }

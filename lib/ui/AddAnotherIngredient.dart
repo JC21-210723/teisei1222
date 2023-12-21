@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:sotsuken2/Data/AllAnotherData.dart';
 
+import '../DB/Database.dart';
+
 class StateAddAnotherIngredient extends StatefulWidget{
   const StateAddAnotherIngredient({super.key});
 
@@ -246,5 +248,22 @@ class AddAnotherIngredient extends State<StateAddAnotherIngredient>{
       ),
     );
   }
+/*
+  final dbProvider = DBProvider.instance;
+  //個人追加表とリスト表の追加処理 個人追加表のuseridを消しました
+  void _insertAdd() async {
+    debugPrint('_insertAddにきました');
+    final AddList = await dbProvider.insertAdd(ingredientName ,kanji ,english,otherName);
+    print('個人追加表にinsertしました: $AddList');
+
+    //試してみてほしい(うまくいくならこれで)
+    final addid1 = await db.rawQuery('SELECT addid FROM k_add WHERE userid = ?',[uesrid]);
+    debugPrint('addid1の結果:addid1');
+    final  List = await dbProvider.insertlistAdd(userid, addid1);
+    print('リスト表にinsertしました: $List');
+  }
+
+
+ */
 
 }

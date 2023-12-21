@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../DB/Database.dart';
+
 class AllAnotherData{
 
   static List<bool> boolList3 = [];
@@ -67,6 +69,30 @@ class AllAnotherData{
   String getValueString3() {
     debugPrint(valueList3.length.toString());
     return valueList3.toString();
+  }
+
+   */
+
+  /*
+//追加成分のinsert処理
+  void insertAllResetAnother() async {
+    debugPrint('insertAllResetAnotherに来ました');
+    final dbProvider = DBProvider.instance;
+    CheckValue.clear();//CheckValueのクリア
+    CheckValue = getValueCheck3();
+    for (int x = 0; x < CheckValue.length; x++) {
+      Gimu.forEach((key, value) { //foodidのみを出力
+        if (value == CheckValue[x]) { //もしGimuリストのaddidとCheckValueのfoodNameが一致したら
+          foodid.add(key as String); // foodidリストにGimuリストのfoodidを格納
+        }
+      });
+    }
+    final int userid = await dbProvider.selectUserId(AllUserData.sUserName);// ユーザーIDを非同期で取得
+    for (int x = 0; x < foodid.length; x++) {
+      final result2 = await dbProvider.insertfood(userid, foodid[x]);// ここでDBにuseridとCheckKeyを渡す（insert）
+      debugPrint('insert処理した内容:$result2');
+    }
+    debugPrint(CheckValue.toString());
   }
 
    */
